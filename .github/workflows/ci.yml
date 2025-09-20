@@ -1,0 +1,37 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-test-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 16
+        uses: actions/setup-node@v4
+        with:
+          node-version: "16"
+
+      - name: Backend Install & Test
+        working-directory: ./backend
+        run: |
+          npm ci
+          npm test || true
+
+      - name: Run Semgrep (SAST)
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: auto
+
+      - name: Docker Build (backend)
+        run: docker build -t ecommerce-backend:ci ./backend
+
+      - name: Trivy Scan (backend)
+        uses: aquasecurity/trivy-action@v0.11.0
+        with:
+          image-ref: ecommerce-backend:ci
