@@ -30,7 +30,7 @@ jobs:
           npm test || echo "No tests found"
 
       - name: Install & test Payment
-        working-directory: payment
+        working-directory: payment-service
         run: |
           npm install
           npm test || echo "No tests found"
