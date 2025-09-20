@@ -77,3 +77,83 @@ jobs:
           ./trivy image --exit-code 0 --severity HIGH,CRITICAL ecommerce-devsecops-backend
           ./trivy image --exit-code 0 --severity HIGH,CRITICAL ecommerce-devsecops-payment
           ./trivy image --exit-code 0 --severity HIGH,CRITICAL ecommerce-devsecops-frontend
+
+# name: DevSecOps CI Pipeline
+
+# on:
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
+
+# jobs:
+#   build-test:
+#     runs-on: ubuntu-latest
+#     services:
+#       mongo:
+#         image: mongo:5
+#         ports:
+#           - 27017:27017
+#     steps:
+#       - name: Checkout repo
+#         uses: actions/checkout@v3
+
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: 16
+
+#       - name: Install & test Backend
+#         working-directory: backend
+#         run: |
+#           npm install
+#           npm test || echo "No tests found"
+
+#       - name: Install & test Payment
+#         working-directory: payment-service
+#         run: |
+#           npm install
+#           npm test || echo "No tests found"
+
+#   security:
+#     runs-on: ubuntu-latest
+#     needs: build-test
+#     steps:
+#       - name: Checkout repo
+#         uses: actions/checkout@v3
+
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: 16
+
+#       - name: Run npm audit (SCA)
+#         working-directory: backend
+#         run: npm audit --audit-level=high || true
+
+#       - name: Install Semgrep (SAST)
+#         run: |
+#           python3 -m pip install semgrep
+#           semgrep --config=auto . || true
+
+#       - name: Run Gitleaks (Secrets Scanning)
+#         uses: gitleaks/gitleaks-action@v2
+#         with:
+#           args: detect --source . --no-git -v
+
+#       - name: Install Trivy
+#         run: |
+#           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
+#           ./trivy --version
+
+#       - name: Build Docker images
+#         run: |
+#           docker build -t ecommerce-devsecops-backend ./backend
+#           docker build -t ecommerce-devsecops-payment ./payment
+#           docker build -t ecommerce-devsecops-frontend ./frontend
+
+#       - name: Run Trivy scan
+#         run: |
+#           ./trivy image --exit-code 0 --severity HIGH,CRITICAL ecommerce-devsecops-backend
+#           ./trivy image --exit-code 0 --severity HIGH,CRITICAL ecommerce-devsecops-payment
+#           ./trivy image --exit-code 0 --severity HIGH,CRITICAL ecommerce-devsecops-frontend
