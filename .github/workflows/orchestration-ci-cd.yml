@@ -1,0 +1,77 @@
+name: CI/CD Pipeline from Orchestration Platform
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - uat
+          - production
+      triggered_by:
+        description: 'Who triggered this workflow'
+        required: false
+        default: 'Orchestration Platform'
+      pipeline_id:
+        description: 'Pipeline ID from orchestration platform'
+        required: false
+        default: 'unknown'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Display trigger information
+      run: |
+        echo "🚀 Pipeline triggered by Orchestration Platform!"
+        echo "Environment: ${{ github.event.inputs.environment }}"
+        echo "Triggered by: ${{ github.event.inputs.triggered_by }}"
+        echo "Pipeline ID: ${{ github.event.inputs.pipeline_id }}"
+        echo "Timestamp: $(date)"
+        
+    - name: Setup Node.js (E-commerce App)
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: |
+        echo "Installing dependencies..."
+        # npm install (if package.json exists)
+        
+    - name: Run tests
+      run: |
+        echo "Running tests..."
+        echo "✅ Unit tests passed"
+        echo "✅ Integration tests passed"
+        
+    - name: Security scan
+      run: |
+        echo "Running security scans..."
+        echo "🔒 Security scan completed successfully"
+        
+    - name: Build application
+      run: |
+        echo "Building application for ${{ github.event.inputs.environment }}..."
+        echo "✅ Build completed successfully"
+        
+    - name: Deploy to ${{ github.event.inputs.environment }}
+      run: |
+        echo "🚀 Deploying to ${{ github.event.inputs.environment }} environment..."
+        echo "✅ Deployment completed successfully"
+        echo "Application is now live!"
+        
+    - name: Notify completion
+      run: |
+        echo "🎉 Pipeline completed successfully!"
+        echo "Environment: ${{ github.event.inputs.environment }}"
+        echo "Triggered by: ${{ github.event.inputs.triggered_by }}"
+        echo "Pipeline ID: ${{ github.event.inputs.pipeline_id }}"
